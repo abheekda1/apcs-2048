@@ -1,7 +1,6 @@
 package com.men;
 
 import com.men.Game.Board;
-import com.men.Game.Tile;
 import com.men.Gfx.LibC;
 
 import com.sun.jna.Native;
@@ -9,17 +8,14 @@ import com.sun.jna.Native;
 public class App {
     private static LibC.termios oldTerm = new LibC.termios();
     private static LibC.termios newTerm = new LibC.termios();
+    private static LibC.winsize winsize = new LibC.winsize();
 
     public static void main(String[] args) throws InterruptedException {
         System.out.print("\033[H\033[2J");
 
-        boolean gameWon = false;
-        boolean gameFinished = false;
-
-        System.out.println("Creating a new board:");
-        Board board = new Board(4);
-        Tile tile = new Tile();
-        board.printBoard();
+        int size = 4;
+        Board board = new Board(size);
+        System.out.printf("Created a new %dx%d board:\n", size, size);
 
         final LibC libc = (LibC) Native.loadLibrary("c", LibC.class);
 
@@ -29,6 +25,9 @@ public class App {
         newTerm.c_lflag &= ~(LibC.ECHO | LibC.ICANON);
 
         libc.tcsetattr(LibC.STDIN_FILENO, LibC.TCSANOW, newTerm);
+
+        libc.ioctl(LibC.STDIN_FILENO, LibC.TIOCGWINSZ, winsize);
+        board.printBoard(winsize);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -49,7 +48,21 @@ public class App {
 
         // board.moveTiles(0);
 
+        LibC.winsize prevWinsize = winsize;
         for (;;) {
+            libc.ioctl(LibC.STDIN_FILENO, LibC.TIOCGWINSZ, winsize);
+
+            if (winsize.ws_col != prevWinsize.ws_col || winsize.ws_row != prevWinsize.ws_row) {
+                System.out.print("\033[H\033[2J");
+                board.printBoard(winsize);
+
+                prevWinsize = winsize;
+
+                continue;
+            }
+
+            prevWinsize = winsize;
+
             char keyPressed = ' ';
 
             char[] c = new char[1];
@@ -87,25 +100,25 @@ public class App {
             if (new String("wasd").contains(String.valueOf(keyPressed))) {
                 int toMove = 0;
                 if (keyPressed == 'w') {
-                    System.out.println("UP!");
+                    //System.out.println("UP!");
                     toMove = 0;
                 }
                 if (keyPressed == 'a') {
-                    System.out.println("LEFT!");
+                    //System.out.println("LEFT!");
                     toMove = 1;
                 }
                 if (keyPressed == 's') {
-                    System.out.println("DOWN!");
+                    //System.out.println("DOWN!");
                     toMove = 3;
                 }
                 if (keyPressed == 'd') {
-                    System.out.println("RIGHT!");
+                    //System.out.println("RIGHT!");
                     toMove = 2;
                 }
 
                 boolean gameOver = board.moveTiles(toMove);
                 System.out.print("\033[H\033[2J");
-                board.printBoard();
+                board.printBoard(winsize);
                 if (gameOver) {
                     System.out.println("you lose, your score sucks too ngl");
                     break;

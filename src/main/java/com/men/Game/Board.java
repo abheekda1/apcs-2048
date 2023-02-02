@@ -3,6 +3,7 @@ package com.men.Game;
 import java.util.ArrayList;
 
 import com.men.Gfx.Color;
+import com.men.Gfx.LibC;
 
 public class Board {
     class Point {
@@ -286,38 +287,19 @@ public class Board {
         return emptyTiles.size();
     }
 
-    public void newTwo() {
-        int x = 0;
-        int n = 0;
+    public void printBoard(LibC.winsize winsize) {
+        int boardHeight = size * 4 + 1;
+        int boardWidth = size * 11 - 3;
 
-        for (int i = 0; i < tiles.length; i++) {
-            for (int j = 0; j < tiles[i].length; j++) {
-                if (tiles[i][j].getNumber() == 0) {
-                    x += 1;
-                }
-            }
-        }
-        n = (int) (Math.random() * x);
-
-    }
-
-    public void printBoard() {
-        /*
-         * for (Tile[] tileRow : tiles) {
-         * for (Tile tileColumn : tileRow) {
-         * System.out.print(tileColumn.getNumber() + " ");
-         * }
-         * 
-         * System.out.println();
-         * }
-         */
-        printBoardNew();
-    }
-
-    public void printBoardNew() {
-        System.out.printf("Score: %d\n", score);
+        System.out.print(String.format("%" + (int) ((winsize.ws_row - boardHeight) / 2) + "s", " ").replace(" ", "\n"));
+        String scoreString = String.format("Score: %d\n", score);
+        System.out.print(String.format("%" + (int) ((winsize.ws_col - boardWidth) / 2) + "s", " "));
+        System.out.print(String.format("%" + (boardWidth - scoreString.length() + 1) + "s", " "));
+        System.out.print(scoreString);
         for (int i = 0; i < tiles.length; i++) {
             Tile[] tileRow = tiles[i];
+
+            System.out.print(String.format("%" + (int) ((winsize.ws_col - boardWidth) / 2) + "s", " "));
 
             for (int tileColumn = 0; tileColumn < tileRow.length; tileColumn++) {
                 System.out.print(Color.getColorEscCode(tileRow[tileColumn].getNumber()));
@@ -328,6 +310,7 @@ public class Board {
             }
 
             System.out.println();
+            System.out.print(String.format("%" + (int) ((winsize.ws_col - boardWidth) / 2) + "s", " "));
 
             for (int tileColumn = 0; tileColumn < tileRow.length; tileColumn++) {
                 System.out.print(Color.getColorEscCode(tileRow[tileColumn].getNumber()));
@@ -345,6 +328,7 @@ public class Board {
             }
 
             System.out.println();
+            System.out.print(String.format("%" + (int) ((winsize.ws_col - boardWidth) / 2) + "s", " "));
 
             for (int tileColumn = 0; tileColumn < tileRow.length; tileColumn++) {
                 System.out.print(Color.getColorEscCode(tileRow[tileColumn].getNumber()));
@@ -355,6 +339,7 @@ public class Board {
             }
 
             System.out.println();
+            System.out.print(String.format("%" + (int) ((winsize.ws_col - boardWidth) / 2) + "s", " "));
 
             if (i != tiles.length - 1) {
                 String rowLine = String.format("%" + (tileRow.length * 8 + (tileRow.length - 1) * 3) + "s", " ")
