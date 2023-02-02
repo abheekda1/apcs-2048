@@ -17,6 +17,7 @@ public class Board {
 
     private Tile[][] tiles;
     private int size;
+    private int score = 0;
 
     public Board(int size) {
         // the 2d array wil by default fill Tile objects with null
@@ -84,6 +85,7 @@ public class Board {
                             hadMovement = true;
                             tiles[h][j].setNumber(tiles[h][j].getNumber() << 1);
                             tiles[i][j].setNumber(0);
+                            score += tiles[h][j].getNumber() << 1;
                         } else {
                             tiles[h + 1][j].setNumber(tiles[i][j].getNumber());
                             if (h + 1 != i) {
@@ -119,6 +121,7 @@ public class Board {
                             hadMovement = true;
                             tiles[j][h].setNumber(tiles[j][h].getNumber() << 1);
                             tiles[j][i].setNumber(0);
+                            score += tiles[j][h].getNumber() << 1;
                         } else {
                             tiles[j][h + 1].setNumber(tiles[j][i].getNumber());
                             if (h + 1 != i) {
@@ -150,6 +153,7 @@ public class Board {
                             hadMovement = true;
                             tiles[j][h].setNumber(tiles[j][h].getNumber() << 1);
                             tiles[j][i].setNumber(0);
+                            score += tiles[j][h].getNumber() << 1;
                         } else {
                             tiles[j][h - 1].setNumber(tiles[j][i].getNumber());
                             if (h - 1 != i) {
@@ -184,6 +188,7 @@ public class Board {
                             hadMovement = true;
                             tiles[h][j].setNumber(tiles[h][j].getNumber() << 1);
                             tiles[i][j].setNumber(0);
+                            score += tiles[j][h].getNumber() << 1;
                         } else {
                             tiles[h - 1][j].setNumber(tiles[i][j].getNumber());
                             if (h - 1 != i) {
@@ -310,6 +315,7 @@ public class Board {
     }
 
     public void printBoardNew() {
+        System.out.printf("Score: %d\n", score);
         for (int i = 0; i < tiles.length; i++) {
             Tile[] tileRow = tiles[i];
 
@@ -362,5 +368,9 @@ public class Board {
         }
 
         System.out.println();
+    }
+
+    public int getScore() {
+        return score;
     }
 }

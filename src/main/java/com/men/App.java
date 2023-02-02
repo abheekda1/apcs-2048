@@ -107,7 +107,7 @@ public class App {
                 System.out.print("\033[H\033[2J");
                 board.printBoard();
                 if (gameOver) {
-                    System.out.println("you lose, your scores prolly pretty low too so no point printing that.");
+                    System.out.println("you lose, your score sucks too ngl");
                     break;
                 }
             }
