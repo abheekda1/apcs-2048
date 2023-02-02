@@ -85,25 +85,31 @@ public class App {
             keyPressed = c[0];
             // }
             if (new String("wasd").contains(String.valueOf(keyPressed))) {
+                int toMove = 0;
                 if (keyPressed == 'w') {
                     System.out.println("UP!");
-                    board.moveTiles(0);
+                    toMove = 0;
                 }
                 if (keyPressed == 'a') {
                     System.out.println("LEFT!");
-                    board.moveTiles(1);
+                    toMove = 1;
                 }
                 if (keyPressed == 's') {
                     System.out.println("DOWN!");
-                    board.moveTiles(3);
+                    toMove = 3;
                 }
                 if (keyPressed == 'd') {
                     System.out.println("RIGHT!");
-                    board.moveTiles(2);
+                    toMove = 2;
                 }
 
+                boolean gameOver = board.moveTiles(toMove);
                 System.out.print("\033[H\033[2J");
                 board.printBoard();
+                if (gameOver) {
+                    System.out.println("you lose, your scores prolly pretty low too so no point printing that.");
+                    break;
+                }
             }
         }
     }

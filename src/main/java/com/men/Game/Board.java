@@ -36,19 +36,22 @@ public class Board {
          * }
          */
 
-        Point start = new Point((int)(Math.random() * size), (int)(Math.random() * size));
+        Point start = new Point((int) (Math.random() * size), (int) (Math.random() * size));
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 // tiles[i][j] = new Tile(Math.random() > 0.5 ? 2 : 0);
-                //tiles[i][j] = new Tile(Math.min(2 << (i * size + j), 8192));
-                if (j == start.x && i == start.y) tiles[i][j] = new Tile(2);
-                else tiles[i][j] = new Tile();
+                // tiles[i][j] = new Tile(Math.min(2 << (int)(Math.random() * 16), 8192));
+                if (j == start.x && i == start.y)
+                    tiles[i][j] = new Tile(2);
+                else
+                    tiles[i][j] = new Tile();
             }
         }
 
     }
 
-    public void moveTiles(int direction /* 0 is up, 1 is right, 2 is left, 3 is down */) throws InterruptedException {
+    public boolean moveTiles(int direction /* 0 is up, 1 is right, 2 is left, 3 is down */)
+            throws InterruptedException {
         // use tile.equals(otherTile) to check if two tiles are equal
         // if down arrow then start in bottom row and move everything as down as
         // possible, and then go up one row at a time to see what tiles to move
@@ -195,10 +198,44 @@ public class Board {
 
         if (hadMovement) {
             int emptyTiles = addRandomTile();
-            if (emptyTiles == 0) {
+            if (emptyTiles == 1) {
                 // check end condition
+                return boardFull();
             }
         }
+
+        return false;
+    }
+
+    boolean boardFull() {
+        for (int row = 0; row < tiles.length; row++) {
+            for (int col = 0; col < tiles[row].length; col++) {
+                int minXBound = Math.max(col - 1, 0);
+                int maxXBound = Math.min(col + 1, size - 1);
+                int minYBound = Math.max(row - 1, 0);
+                int maxYBound = Math.min(row + 1, size - 1);
+
+                for (int i = minYBound; i <= maxYBound; i++) {
+                    if (i == row)
+                        continue;
+
+                    if (tiles[row][col].equals(tiles[i][col]) || tiles[i][col].getNumber() == 0) {
+                        return false;
+                    }
+                }
+
+                for (int j = minXBound; j <= maxXBound; j++) {
+                    if (j == col)
+                        continue;
+
+                    if (tiles[row][col].equals(tiles[row][j]) || tiles[row][j].getNumber() == 0) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     private int addRandomTile() {
