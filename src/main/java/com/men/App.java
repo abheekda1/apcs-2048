@@ -11,17 +11,21 @@ public class App {
     private static LibC.winsize winsize = new LibC.winsize();
 
     public static void main(String[] args) throws InterruptedException {
+        // clear and reset
         System.out.print("\033[H\033[2J");
 
+        // create board
         int size = 4;
         Board board = new Board(size);
         System.out.printf("Created a new %dx%d board:\n", size, size);
 
+        // libc
         final LibC libc = (LibC) Native.loadLibrary("c", LibC.class);
 
         libc.tcgetattr(LibC.STDIN_FILENO, oldTerm);
         libc.tcgetattr(LibC.STDIN_FILENO, newTerm);
 
+        // diable canonical mode to get input
         newTerm.c_lflag &= ~(LibC.ECHO | LibC.ICANON);
 
         libc.tcsetattr(LibC.STDIN_FILENO, LibC.TCSANOW, newTerm);
@@ -29,6 +33,7 @@ public class App {
         libc.ioctl(LibC.STDIN_FILENO, LibC.TIOCGWINSZ, winsize);
         board.printBoard(winsize);
 
+        // reset terminal on exit
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 libc.tcsetattr(LibC.STDIN_FILENO, LibC.TCSANOW, oldTerm);
@@ -48,6 +53,7 @@ public class App {
 
         // board.moveTiles(0);
 
+        // get winsize
         LibC.winsize prevWinsize = winsize;
         for (;;) {
             libc.ioctl(LibC.STDIN_FILENO, LibC.TIOCGWINSZ, winsize);
@@ -65,6 +71,7 @@ public class App {
 
             char keyPressed = ' ';
 
+            // get input
             char[] c = new char[1];
             libc.read(LibC.STDIN_FILENO, c, 1);
 
@@ -97,6 +104,7 @@ public class App {
             // } else {
             keyPressed = c[0];
             // }
+            // switch on keypress wasd
             if (new String("wasd").contains(String.valueOf(keyPressed))) {
                 int toMove = 0;
                 if (keyPressed == 'w') {
@@ -116,6 +124,7 @@ public class App {
                     toMove = 2;
                 }
 
+                // check game end condition and exit
                 boolean gameOver = board.moveTiles(toMove);
                 System.out.print("\033[H\033[2J");
                 board.printBoard(winsize);
